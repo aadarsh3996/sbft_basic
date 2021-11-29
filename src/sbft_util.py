@@ -1,4 +1,5 @@
 import rsa
+import uuid
 
 def generate_rsa_key_pairs():
     
@@ -16,3 +17,5 @@ def decrypt_data(decryption_key, message):
 
     return rsa.decrypt(message, rsa.PrivateKey.load_pkcs1(decryption_key.encode('utf-8'))).decode('utf-8')
 
+def create_transaction_id():
+    return str(uuid.uuid4())
