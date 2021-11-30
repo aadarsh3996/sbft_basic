@@ -1,2 +1,5 @@
 # Exclude .pyc files
 *.pyc
+
+# Exclude virtual env files
+venv*
