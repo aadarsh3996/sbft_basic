@@ -1,5 +1,6 @@
+from typing import OrderedDict
 import sbft_util
-
+from collections import OrderedDict
 class Transaction:
     def __init__(self, data, auth) -> None:
         self.transaction_id = sbft_util.create_transaction_id()
