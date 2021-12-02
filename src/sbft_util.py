@@ -37,6 +37,7 @@ def create_nodes(number_of_nodes):
         pass
     port_start_number = 5000
     nodes = {}
+    node_types= ["primary","c_collector","e_collector","replica"]
     for i in range(number_of_nodes):
         key_pair = generate_rsa_key_pairs()
         server_ip = "127.0.0.1"
@@ -46,9 +47,25 @@ def create_nodes(number_of_nodes):
         node_info["port"] = port
         node_info["public_key"] = key_pair["public_key"]
         node_info["private_key"] = key_pair["private_key"]
+        if i==0:
+            node_info['node_type'] = "primary"
+        elif i == 1:
+            node_info['node_type'] = "c_collector"
+        elif i ==2:
+            node_info["node_type"] = "e_collector"
+        else:
+            node_info["node_type"] = "replica"
+        
         nodes[node_info["public_key"]] = node_info
     
     with open("node_info.json", "w") as info:
         json.dump(nodes, info)
 
+def load_config(filename):
+    config = {}
+    with open(filename) as f:
+        config = json.load(f)
+        return config
 
+def create_url(host, port, route):
+    return "http://" + host + ":" + str(port) + "/" + route
