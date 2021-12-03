@@ -61,9 +61,8 @@ def create_nodes(number_of_nodes):
     network_info = {}
     network_info['nodes'] = nodes
     network_info['trigger'] = False
-    network_info['faulty'] = set()
     network_info['view_number'] = 0
-    
+    print(network_info)
     with open("network_info.json", "w") as info:
         json.dump(network_info, info)
 
@@ -79,7 +78,7 @@ def create_url(host, port, route):
 def sort_and_convert_dict(d):
     s = ""
     for k in sorted(d.keys()):
-        s+= k+" "+d[k] + " "
+        s+= str(k)+" "+str(d[k]) + " "
     return s 
 
 def create_hash(data):
