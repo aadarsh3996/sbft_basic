@@ -3,7 +3,7 @@ import rsa
 import time
 import json
 import uuid
-
+import hashlib
 from rsa import key
 
 
@@ -69,3 +69,12 @@ def load_config(filename):
 
 def create_url(host, port, route):
     return "http://" + host + ":" + str(port) + "/" + route
+
+def sort_and_convert_dict(d):
+    s = ""
+    for k in sorted(d.keys()):
+        s+= k+" "+d[k] + " "
+    return s 
+
+def create_hash(data):
+    return hashlib.sha256(data.encode()).hexdigest()
