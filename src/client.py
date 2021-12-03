@@ -3,8 +3,9 @@ import sbft_util
 
 def create_transaction(data):
     network_info = sbft_util.load_config("node_info.json")
+    nodes_info = network_info['nodes']
     
-    for node in network_info.values():
+    for node in nodes_info.values():
         if node["node_type"] == "primary":
             host = node["server_ip"]
             port = node["port"]
