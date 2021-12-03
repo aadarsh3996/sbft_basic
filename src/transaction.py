@@ -8,7 +8,7 @@ class Transaction:
         self.input = {"data":data, "timestamp":int(sbft_util.time_now())}
         self.encrypted_message = sbft_util.encrypt_data(self.user, self.input)
 
-    def verify_transaction(self,auth):
+    def verify_transaction(self, transaction):
         try:
             sbft_util.decrypt_data(auth.private_key, self.encrypted_message)
             return True

@@ -3,7 +3,7 @@ import rsa
 import time
 import json
 import uuid
-
+import hashlib
 from rsa import key
 
 
@@ -30,7 +30,7 @@ def create_transaction_id():
 def time_now():
 	return int(time.time())
 
-def dump_config(network_info={}, filename) :
+def dump_config(network_info, filename) :
 	with open(filename, "w") as info:
 		json.dump(network_info, info)
 
@@ -42,7 +42,7 @@ def load_config(filename):
 
 def create_nodes(number_of_nodes):
 	try:
-		os.remove("node_info.json")
+		os.remove("network_info.json")
 	except:
 		pass
 	port_start_number = 5000
@@ -67,20 +67,27 @@ def create_nodes(number_of_nodes):
 			node_info["node_type"] = "replica"
 		
 		nodes[node_info["public_key"]] = node_info
-
+	
 	network_info = {}
 	network_info['nodes'] = nodes
 	network_info['trigger'] = False
-	#network_info['faulty'] = set()
 	network_info['view_number'] = 0
+	
 	network_info['n'] = len(list(nodes.items()))
 	network_info['c'] = 0
 	
-
-	# For view-change : to elect new leader
-	network_info['leader_elect'] = {}
-
+	print(network_info)
+	
 	dump_config(network_info, "network_info.json")
 	
 def create_url(host, port, route):
-	return "http://" + host + ":" + str(port) + "/" + route
+    return "http://" + host + ":" + str(port) + "/" + route
+
+def sort_and_convert_dict(d):
+    s = ""
+    for k in sorted(d.keys()):
+        s+= str(k)+" "+str(d[k]) + " "
+    return s 
+
+def create_hash(data):
+    return hashlib.sha256(data.encode()).hexdigest()
