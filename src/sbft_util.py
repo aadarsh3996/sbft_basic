@@ -58,8 +58,14 @@ def create_nodes(number_of_nodes):
         
         nodes[node_info["public_key"]] = node_info
     
-    with open("node_info.json", "w") as info:
-        json.dump(nodes, info)
+    network_info = {}
+    network_info['nodes'] = nodes
+    network_info['trigger'] = False
+    network_info['faulty'] = set()
+    network_info['view_number'] = 0
+    
+    with open("network_info.json", "w") as info:
+        json.dump(network_info, info)
 
 def load_config(filename):
     config = {}
