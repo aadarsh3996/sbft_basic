@@ -398,7 +398,7 @@ def e_collector(data=None):
     network_info = load_config("network_info.json")["nodes"]
     f = (len(network_info.values())-1)//3
     v = None
-    if len(e_collector_queue[data["transaction_id"]]) >= f+c+1:
+    if len(e_collector_queue[data["transaction_id"]]) >= f+1:
         print(" Received f+1 messages from replica and sent execute proof")
         for t in e_collector_queue[data["transaction_id"]]:
             v = t
