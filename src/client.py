@@ -5,7 +5,7 @@ def create_transaction(data):
     network_info = sbft_util.load_config("network_info.json")
     
     for node in network_info["nodes"].values():
-        if node["node_type"] == "primary":
+        if node["node_type"] == "c_collector":
             host = node["server_ip"]
             port = node["port"]
             route = "pre_prepare"

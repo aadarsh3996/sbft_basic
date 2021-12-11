@@ -35,22 +35,38 @@ block_chain_data = []
 h = "127.0.0.1"
 p = 5000
 
+def find_primary():
+    network_info = load_config("network_info.json")["nodes"]
+    for node in network_info.values():
+        if node["node_type"] == "primary":
+            return {"ip":node["server_ip"],"port":node["port"]}
+
 @app.route("/pre_prepare", methods = ['POST','GET'])
 def start_transaction(data=None):
+
+
     print("Request received from client")
     global sequence_number
     print(request.get_json())
     #return "<p>Hello, World!</p>"
-    sequence_number+=1
     data = request.get_json()
+    primary_info = find_primary()
+
+    if primary_info["port"] != p:
+        print("Forwarding the request to primary")
+        d = requests.post(create_url(primary_info["ip"], primary_info["port"], "pre_prepare"), json=data)
+        return json.dumps(primary_info)
+
     data['sequence_number'] = sequence_number
     data['transaction_id'] = create_transaction_id()
     data['timestamp'] = time_now()
     network_info = load_config("network_info.json")["nodes"]
+    
+
 
     for node in network_info.values():
         if node["node_type"] != "primary":
-            d=requests.post(create_url(node["server_ip"],node["port"],"prepare"),json=data)
+            d=requests.post(create_url(node["server_ip"],node["port"], "prepare"),json=data)
         else:
             prepare(data)
 
@@ -370,7 +386,7 @@ def block_chain(data=None):
     global block_chain_data
     b = {"block_chain":block_chain}
     print(b)
-    return json.dumps({"block_chain":block_chain_data})
+    return json.dumps({"block_chain":block_chain_data}) + "\n"
     #return "<p>Hello, World!</p>"
 
 @app.route("/get_primary", methods = ['POST','GET'])
