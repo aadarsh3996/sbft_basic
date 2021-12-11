@@ -13,6 +13,8 @@ import requests
 import pickle
 requests.adapters.DEFAULT_RETRIES = 0
 
+# TODO Add the abstractions of block, blockchain,
+# preprepare, commit, message, transaction pool to this file
 app = Flask(__name__)
 
 faulty_nodes = set()
@@ -262,6 +264,7 @@ def get_n_c():
 
 @app.route("/prepare", methods=['POST', 'GET'])
 def prepare(data=None):
+    global sequence_number
     print("Request received from primary")
     data = data if data else request.get_json()
 
@@ -274,7 +277,7 @@ def prepare(data=None):
 
     print("Sdata")
     serialized_data = sort_and_convert_dict(data)
-
+    sequence_number = data["sequence_number"]
     data['public_key'] = public_key
     print(serialized_data)
     print("After Sdata")
@@ -319,7 +322,7 @@ def c_collector(data=None):
     s_data = sort_and_convert_dict(data)
     print(s_data)
     c_hash = create_hash(s_data)
-    if 0:  # hash!=c_hash:
+    if hash!=c_hash:
         print("Dropping the message in c_collector due to hash check fail")
         return "<p>Hello, World!</p>"
     data["hash"] = c_hash
@@ -335,7 +338,7 @@ def c_collector(data=None):
     v = None
     print("Length for transaction id".format(
         len(c_collector_queue[data["transaction_id"]])), c_collector_queue)
-    if len(c_collector_queue[data["transaction_id"]]) >= 2*f+1:
+    if len(c_collector_queue[data["transaction_id"]]) >= 2*f+c+1:
         for t in c_collector_queue[data["transaction_id"]]:
             collective_hash += t["hash"]
             v = t
@@ -384,7 +387,7 @@ def commit_proof(data=None):
 
 @app.route("/e_collector", methods=['POST', 'GET'])
 def e_collector(data=None):
-    global e_collector_queue
+    global e_collector_queue, c
     data = data if data else request.get_json()
 
     if data["transaction_id"] not in e_collector_queue.keys():
@@ -395,7 +398,7 @@ def e_collector(data=None):
     network_info = load_config("network_info.json")["nodes"]
     f = (len(network_info.values())-1)//3
     v = None
-    if len(e_collector_queue[data["transaction_id"]]) >= f+1:
+    if len(e_collector_queue[data["transaction_id"]]) >= f+c+1:
         print(" Received f+1 messages from replica and sent execute proof")
         for t in e_collector_queue[data["transaction_id"]]:
             v = t
